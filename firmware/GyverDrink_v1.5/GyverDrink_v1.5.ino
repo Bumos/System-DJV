@@ -74,8 +74,10 @@ const byte SW_pins[] = {A0, A1, A2, A3, A4, A5};
 
 // =========== ДАТА ===========
 #define COLOR_DEBTH 2   // цветовая глубина: 1, 2, 3 (в байтах)
-LEDdata leds[NUM_SHOTS];  // буфер ленты типа LEDdata (размер зависит от COLOR_DEBTH)
-microLED strip(leds, NUM_SHOTS, LED_PIN);  // объект лента
+#define NUM_LEDS 16   // общее количество светодиодов
+#define NUM_LEDS_PER_MATRIX 4 // светодиодов в одной матрице
+LEDdata leds[NUM_LEDS];  // буфер ленты типа LEDdata (размер зависит от COLOR_DEBTH)
+microLED strip(leds, NUM_LEDS, LED_PIN);  // объект лента
 
 GyverTM1637 disp(DISP_CLK, DISP_DIO);
 
