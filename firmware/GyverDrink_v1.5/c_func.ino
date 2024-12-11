@@ -32,9 +32,9 @@ void serviceMode() {
         // зажигаем светодиоды от кнопок
         for (byte i = 0; i < NUM_SHOTS; i++) {
           if (!digitalRead(SW_pins[i])) {
-            strip.setLED(i, mCOLOR(GREEN));
+           lightUpMatrix(i, GREEN);
           } else {
-            strip.setLED(i, mCOLOR(BLACK));
+           lightUpMatrix(i, BLACK);
           }
           strip.show();
         }
@@ -83,14 +83,14 @@ void flowTick() {
       if (swState && shotStates[i] == NO_GLASS) {  // поставили пустую рюмку
         timeoutReset();                                             // сброс таймаута
         shotStates[i] = EMPTY;                                      // флаг на заправку
-        strip.setLED(i, mCOLOR(RED));                               // подсветили
+        lightUpMatrix(i, RED);                             // подсветили
         LEDchanged = true;
         DEBUG("set glass");
         DEBUG(i);
       }
       if (!swState && shotStates[i] != NO_GLASS) {   // убрали пустую/полную рюмку
         shotStates[i] = NO_GLASS;                                   // статус - нет рюмки
-        strip.setLED(i, mCOLOR(BLACK));                             // нигра
+        lightUpMatrix(i, BLACK);                           // нигра
         LEDchanged = true;
         timeoutReset();                                             // сброс таймаута
         if (i == curPumping) {
@@ -151,7 +151,7 @@ void flowRoutnie() {
       FLOWtimer.setInterval((long)thisVolume * time50ml / 50);  // перенастроили таймер
       FLOWtimer.reset();                                  // сброс таймера
       pumpON();                                           // НАЛИВАЙ!
-      strip.setLED(curPumping, mCOLOR(YELLOW));           // зажгли цвет
+      lightUpMatrix(curPumping, YELLOW);           // зажгли цвет
       strip.show();
       DEBUG("fill glass");
       DEBUG(curPumping);
@@ -161,7 +161,7 @@ void flowRoutnie() {
     if (FLOWtimer.isReady()) {                            // если налили (таймер)
       pumpOFF();                                          // помпа выкл
       shotStates[curPumping] = READY;                     // налитая рюмка, статус: готов
-      strip.setLED(curPumping, mCOLOR(LIME));             // подсветили
+      lightUpMatrix(curPumping, LIME); 
       strip.show();
       curPumping = -1;                                    // снимаем выбор рюмки
       systemState = WAIT;                                 // режим работы - ждать
@@ -228,5 +228,16 @@ void jerkServo() {
     servo.detach();
     servoOFF();
     disp.brightness(1);
+  }
+}
+
+// Функция зажигания матрицы
+void lightUpMatrix(byte matrixIndex, uint32_t color) {
+  // Начальный индекс светодиодов в этой матрице
+  byte startLED = matrixIndex * NUM_LEDS_PER_MATRIX;
+
+  // Зажигаем все светодиоды в пределах матрицы
+  for (byte j = 0; j < NUM_LEDS_PER_MATRIX; j++) {
+    strip.setLED(startLED + j, mCOLOR(color));
   }
 }
